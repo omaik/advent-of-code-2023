@@ -35,20 +35,13 @@ module Day1
     }.freeze
 
     def call2
-      input.map do |line|
-        group_match = "\\d|#{WORDS_TO_NUMBERS.keys.join('|')}"
-        nums = line.scan(/#{group_match}/)
+      input.sum do |line|
+        nums = line.scan(/\d|#{WORDS_TO_NUMBERS.keys.join('|')}/)
         arr = [nums.first, nums.last]
-        nums = arr.map do |x|
-          if WORDS_TO_NUMBERS.keys.include?(x)
-            WORDS_TO_NUMBERS[x]
-          else
-            x&.to_i
-          end
-        end
-        nums[1] = nums[0] if nums[1].nil?
-        nums.join.to_i
-      end.sum
+        arr.map do |x|
+          WORDS_TO_NUMBERS.keys.include?(x) ? WORDS_TO_NUMBERS[x] : x
+        end.join.to_i
+      end
     end
 
     def input
