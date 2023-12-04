@@ -5,12 +5,34 @@ module Day4
       SAMPLE_INPUT_FILE_PATH = "#{__dir__}/input.sample.txt".freeze
 
       def call(sample)
-        data(sample).split("\n")
+        data(sample).split("\n").map do |line|
+          Card.new(line)
+        end
       end
 
       def data(sample)
         sample ? File.read(SAMPLE_INPUT_FILE_PATH) : File.read(INPUT_FILE_PATH)
       end
+    end
+  end
+
+  class Card
+    def initialize(line)
+      match = line.match(/(.+): (.+) \| (.+)/)
+
+      @winning = match[2].split(' ').map(&:to_i)
+      @all = match[3].split(' ').map(&:to_i)
+    end
+
+    def points
+      power = winning_cards - 1
+      return 0 if power.negative?
+
+      2**power
+    end
+
+    def winning_cards
+      (@all & @winning).size
     end
   end
 end

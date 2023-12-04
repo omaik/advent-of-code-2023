@@ -7,6 +7,9 @@ Metrics/BlockLength:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
+Style/MultilineBlockChain:
+  Enabled: false
+
 AllCops:
   SuggestExtensions: false
 
@@ -20,6 +23,9 @@ Metrics/AbcSize:
   Enabled: false
 
 Lint/StructNewOverride:
+  Enabled: false
+
+Lint/AssignmentInCondition:
   Enabled: false
 
 Metrics/MethodLength:
