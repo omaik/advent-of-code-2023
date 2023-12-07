@@ -4,9 +4,17 @@ module Day7
       @sample = sample
     end
 
-    def call1; end
+    def call1
+      input.sort_by(&:calculate_score).each.with_index(1).map do |hand, index|
+        hand.bid * index
+      end.sum
+    end
 
-    def call2; end
+    def call2
+      input.sort_by(&:calculate_joker_score).each.with_index(1).map do |hand, index|
+        hand.bid * index
+      end.sum
+    end
 
     def input
       @input ||= Input.call(@sample)
