@@ -5,7 +5,15 @@ module Day8
       SAMPLE_INPUT_FILE_PATH = "#{__dir__}/input.sample.txt".freeze
 
       def call(sample)
-        data(sample).split("\n")
+        steps, map = data(sample).split("\n\n")
+
+        map = map.split("\n").map do |line|
+          match = line.match(/(\w+) = \((\w+), (\w+)\)/)
+
+          { match[1] => [match[2], match[3]] }
+        end.inject(&:merge)
+
+        [steps, map]
       end
 
       def data(sample)
