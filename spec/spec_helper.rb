@@ -16,6 +16,7 @@
 require 'require_all'
 require 'active_support/all'
 require 'pry'
+require 'parallel'
 require_all 'lib'
 
 RSpec.configure do |config|

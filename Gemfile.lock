@@ -61,6 +61,7 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport
+  parallel
   pry
   require_all
   rspec
