@@ -5,7 +5,11 @@ module Day13
       SAMPLE_INPUT_FILE_PATH = "#{__dir__}/input.sample.txt".freeze
 
       def call(sample)
-        data(sample).split("\n")
+        data(sample).split("\n\n").map do |cube|
+          classic = cube.split("\n").map { |line| line.split('') }
+          transposed = classic.transpose
+          [classic, transposed]
+        end
       end
 
       def data(sample)
