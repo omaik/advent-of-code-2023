@@ -22,7 +22,8 @@ module Day18
     def initialize(line)
       @direction, @moves, @color = line.match(/(\w) (\d+) \((.+)\)/).captures
 
-      @moves = @moves.to_i
+      @moves = @color[1..5].to_i(16)
+      @direction = %w[R D L U][@color[6].to_i]
     end
 
     def move(point)

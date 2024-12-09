@@ -5,104 +5,92 @@ module Day18
     end
 
     def call1
-      path = [[0, 0]]
+      call2
+    end
 
-      input.each do |instruction|
-        path += instruction.move(path.last).to_a
-      end
+    def call2
+      array = input.deep_dup
 
-      frame = frame(path)
+      area = 0
 
-      count = 0
+      loop do
+        is = array.map.with_index do |instruction, index|
+          index if (instruction.direction == 'U' && array[index - 1].direction == 'L' && array[(index + 1) % array.size].direction == 'R') ||
 
-      @outsiders = []
-      @insiders = []
+                   (instruction.direction == 'D' && array[index - 1].direction == 'R' && array[(index + 1) % array.size].direction == 'L') ||
+                   (instruction.direction == 'L' && array[index - 1].direction == 'D' && array[(index + 1) % array.size].direction == 'U') ||
+                   (instruction.direction == 'R' && array[index - 1].direction == 'U' && array[(index + 1) % array.size].direction == 'D')
+        end.compact
 
-      frame.first.each do |y|
-        @inside = nil
-        frame.last.each do |x|
-          if path.include?([y, x])
-            count += 1
-            putc '#'
-          elsif inside?([y, x], frame, path)
-            @insiders << [y, x]
-            count += 1
-            putc '*'
-          else
-            @outsiders << [y, x]
-            putc '.'
-          end
+        i = is.min_by { |j| [array[(j + 1) % array.size].moves, array[j - 1].moves].min * (array[j].moves + 1) }
+
+        break unless i
+
+        break if array.size == 4
+
+        left = array[i - 1]
+        up = array[i]
+        right = array[(i + 1) % array.size]
+
+        if left.moves > right.moves
+          left.moves -= right.moves
+          area += right.moves * (up.moves + 1)
+          array.delete(right)
+        elsif left.moves < right.moves
+          right.moves -= left.moves
+          area += (left.moves * (up.moves + 1))
+          array.delete(left)
+        else
+          area += left.moves * (up.moves + 1)
+          array.delete(right)
+          array.delete(left)
         end
 
-        puts
-      end
+        a = array.last
+        b = array.first
+        dedup(a, b, array) if %w[U D].include?(a.direction) && %w[U D].include?(b.direction)
 
-      count
-    end
-
-    def call2; end
-
-    def frame(path)
-      [Range.new(*path.map(&:first).minmax), Range.new(*path.map(&:last).minmax)]
-    end
-
-    def frame_lines(path, frame)
-      @frame_lines ||= frame.first.to_h do |y|
-        [y, path.select { |point| point.first == y }.map(&:last).minmax]
-      end
-    end
-
-    def inside?(point, frame, path)
-      return false if point.last < frame_lines(path,
-                                               frame)[point.first].first || point.last > frame_lines(path,
-                                                                                                     frame)[point.first].last
-
-      # left_distance = point.last - frame.last.begin
-      # right_distance = frame.last.end - point.last
-      up_distance = point.first - frame.first.begin
-      down_distance = frame.first.end - point.first
-
-      min = [up_distance, down_distance].min
-
-      enum = if min == up_distance
-               point.first.downto(frame.first.begin - 1)
-             elsif min == down_distance
-               point.first.upto(frame.first.end + 1)
-             end
-
-      walls = 0
-      x = point.last
-
-      return true if  @insiders.include?([point.first, x - 1])
-      return false if @outsiders.include?([point.first, x - 1])
-
-      enum.each do |y|
-        loop do
-          unless path.include?([y, x])
-            # x += 1
-            break
-          end
-
-          additive = min == up_distance ? 1 : -1
-
-          if path.include?([y + additive, x + 1])
-            walls += 1
-            break
-          else
-            x += 1
-          end
+        dupls = array.each_cons(2).to_a.index do |a, b|
+          %w[U D].include?(a.direction) && %w[U D].include?(b.direction)
         end
+
+        if dupls
+          a = array[dupls]
+          b = array[dupls + 1]
+          dedup(a, b, array)
+        end
+
+        a = array.last
+        b = array.first
+        dedup(a, b, array) if %w[L R].include?(a.direction) && %w[L R].include?(b.direction)
+
+        dupls = array.each_cons(2).to_a.index do |a, b|
+          %w[L R].include?(a.direction) && %w[L R].include?(b.direction)
+        end
+
+        next unless dupls
+
+        a = array[dupls]
+        b = array[dupls + 1]
+        dedup(a, b, array)
       end
 
-      walls.odd?
+      area + array.first(2).map(&:moves).map(&:next).reduce(:*)
     end
 
-    def horizontal?(point, path)
-      path.include?([point.first, point.last - 1]) || path.include?([point.first, point.last + 1])
-    end
+    def dedup(a, b, array)
+      if a.direction == b.direction
+        a.moves += b.moves
+        array.delete(b)
 
-    def vertical?(point, path)
-      !horizontal?(point, path)
+      elsif a.moves > b.moves
+        a.moves -= b.moves
+        array.delete(b)
+      else
+        b.moves -= a.moves
+
+        array.delete(a)
+      end
     end
 
     def input

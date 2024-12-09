@@ -4,7 +4,18 @@ module Day20
       @sample = sample
     end
 
-    def call1; end
+    def call1
+      # binding.pry
+
+      game_id = 1
+      loop do
+        input.play(game_id)
+
+        # break if input.signal_trace['a'] > 0
+
+        game_id += 1
+      end
+    end
 
     def call2; end
 
@@ -13,3 +24,4 @@ module Day20
     end
   end
 end
+
